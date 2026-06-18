@@ -1,0 +1,29 @@
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    padding: 20px;
+}
+
+button {
+    padding: 10px;
+    margin: 5px;
+}
+
+.board {
+    display: grid;
+    grid-template-columns: repeat(9, 30px);
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(5, 30px);
+    grid-template-rows: repeat(5, 30px);
+}
+
+#generated_board,
+#solved_board,
+#generated_grid {
+    margin-top: 10px;
+    font-family: monospace;
+    white-space: pre;
+}
+

@@ -88,7 +88,7 @@ def generate_solve_board():
 
     start = time.perf_counter()
     
-    solved = solver(board)
+    solved, board_steps = solver(board)
 
     end = time.perf_counter()
 
@@ -102,6 +102,7 @@ def generate_solve_board():
     return {
         "solved": solved,
         "generated_board": generated_board.to_list(),
+        "board_steps": board_steps,
         "solved_board": board.to_list(),
         "time_ms": (end - start) * 1000
     }
@@ -168,16 +169,18 @@ def solve_board(request: SudokuRequest):
     board = Board(request.board)
     board.append_positions()
     
-    solved = solver(board)
+    solved, steps = solver(board)
 
     if not solved:
         return {
             "solved": solved,
+            "board_steps": steps,
             "board": board.to_list(),
             "error": "Board is unsolvable"
         }
 
     return {
         "solved": solved,
+        "board_steps": steps,
         "board": board.to_list()
     }

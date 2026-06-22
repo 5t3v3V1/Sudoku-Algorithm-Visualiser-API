@@ -5,6 +5,15 @@
     border: 1px solid #ccc;
 }
 
+.board_cell {
+    width: 30px;
+    height: 30px;
+    border: 1px solid #ccc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .wall {
     background-color: #1a1a1a;
 }
@@ -38,3 +47,27 @@
     grid-template-rows: repeat(5, 60px);
 }
 
+button {
+    padding: 10px;
+    margin: 5px;
+}
+
+.algorithms {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.boards {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+#generated_board,
+#solved_board,
+#generated_grid {
+    margin-top: 10px;
+    font-family: monospace;
+    white-space: pre;
+}

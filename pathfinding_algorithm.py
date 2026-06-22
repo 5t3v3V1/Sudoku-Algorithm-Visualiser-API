@@ -52,9 +52,8 @@ def bfs(grid):
                         visit_order.append(neighbour.position)
                         queue.append(neighbour.position)
 
-        else:
-            print("Unable to reach desired node")
-            return nodes_visited, bfs_grid, steps
+    print("Unable to reach desired node")
+    return nodes_visited, bfs_grid, steps
 
 
 def dfs(grid):
@@ -108,9 +107,8 @@ def dfs(grid):
                         visit_order.append(neighbour.position)
                         stack.append(neighbour.position)
 
-        else:
-            print("Unable to reach desired node")
-            return nodes_visited, dfs_grid, steps
+    print("Unable to reach desired node")
+    return nodes_visited, dfs_grid, steps
 
 def dijkstra(grid):
     start_position, end_position = (0, 0), (4, 4)
@@ -159,8 +157,13 @@ def dijkstra(grid):
 
             while node is not None:
                 path.append(node.position)
-                node.pathed()
                 node = node.parent  
+
+            path.reverse()
+
+            for node_position in path:
+                identified_node = identify_node(grid, node_position)
+                identified_node.pathed()
                 steps.append(grid.to_list())
 
             dijkstra_grid = grid
@@ -186,9 +189,8 @@ def dijkstra(grid):
             unvisited.discard(current)
             visited.add(current)
 
-        else:
-            print("Unable to reach desired node")
-            return nodes_visited, dijkstra_grid, steps
+    print("Unable to reach desired node")
+    return nodes_visited, dijkstra_grid, steps
 
 def astar(grid):
     start_position, end_position = (0, 0), (4, 4)
@@ -238,8 +240,13 @@ def astar(grid):
 
             while node is not None:
                 path.append(node.position)
-                node.pathed()
                 node = node.parent
+
+            path.reverse()
+
+            for node_position in path:
+                identified_node = identify_node(grid, node_position)
+                identified_node.pathed()
                 steps.append(grid.to_list())
 
             astar_grid = grid 
@@ -266,6 +273,5 @@ def astar(grid):
             unvisited.discard(current)
             visited.add(current)
 
-        else:
-            print("Unable to reach desired node")
-            return nodes_visited, astar_grid, steps
+    print("Unable to reach desired node")
+    return nodes_visited, astar_grid, steps

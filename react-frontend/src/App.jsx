@@ -98,71 +98,82 @@ function App() {
     return (
       <>
         <h1>Algorithm Visualiser</h1>
-        <p></p>
-        <p>Options</p>
+        <h2 style={{textAlign: 'center'}}>Description</h2>
+        <p>Hi, this is algorithm visualiser which is able to solve and generate sudoku boards and 5x5 grids using BFS, DFS, Dijkstra and A* algorithms.</p>
+        <p>Creator: 5t3v3V1</p>
+        <h3>Options</h3>
         <button onClick={generate_solved_board}>Generate & Solve Board</button>
         <button onClick={generate_solved_grid}>Generate & Solve Grid</button>
-        <p></p>
         <div className='boards'>
           <div>
-            <p>Generated Board:</p>
+            <h4>Generated Board:</h4>
             <Board board={generatedBoard} />
           </div>
           <div>
-            <p>Steps:</p>
+            <h4>Steps:</h4>
             <Board board={boardStep} />
           </div>
           <div>
-            <p>Solved Board:</p>
+            <h4>Solved Board:</h4>
             <Board board={solvedBoard} />
           </div>
         </div>
-        <p></p>
         <div>Board Time: {boardTime}ms</div>
-        <p></p>
-        <p>Generated Grid:</p>
-        <Grid grid={generatedGrid} />
-        <p></p>
-        <div className="algorithms">
+        <div className='generated'>
+          <div>
+            <h3>Generated Grid:</h3>
+            <Grid grid={generatedGrid} />
+          </div>
+          <div>
+            <h3>Node Classification</h3>
+            <p className="cell wall" style={{width: '120px', textAlign: 'center', color: 'aliceblue'}}>Wall</p>
+            <p className="cell super_light" style={{width: '120px', color: 'black'}}>Node Cost: 1</p>
+            <p className="cell light" style={{width: '120px', color: 'black'}}>Node Cost: 5</p>
+            <p className="cell medium" style={{width: '120px', color: 'black'}}>Node Cost: 10</p>
+            <p className="cell heavy" style={{width: '120px', color: 'black'}}>Node Cost: 15</p>
+            <p className="cell visited" style={{width: '120px', textAlign: 'center', color: 'black'}}>Visited</p>
+            <p className="cell path" style={{width: '120px', textAlign: 'center', color: 'black'}}>Path</p>
+          </div>
+        </div>
+        <div className="algorithms"  style={{marginBottom: '20px'}}>
             <div>
                 <h3>BFS</h3>
-                <div>Nodes Visited: {bfsNodes}</div>
-                <p>Steps:</p>
+                <div style={{marginBottom: '20px'}}>Nodes Visited: {bfsNodes}</div>
+                <p style={{marginBottom: '20px'}}>Steps:</p>
                 <Grid grid={bfsGridStep} />
-                <p>Solved Grid:</p>
+                <p style={{marginBottom: '20px'}}>Solved Grid:</p>
                 <Grid grid={solvedBfsGrid} />
                 <div>Solve Time: {bfsTime}ms</div>
             </div>
             <div>
                 <h3>DFS</h3>
-                <div>Nodes Visited: {dfsNodes}</div>
-                <p>Steps:</p>
+                <div style={{marginBottom: '20px'}}>Nodes Visited: {dfsNodes}</div>
+                <p style={{marginBottom: '20px'}}>Steps:</p>
                 <Grid grid={dfsGridStep} />
-                <p>Solved Grid:</p>
+                <p style={{marginBottom: '20px'}}>Solved Grid:</p>
                 <Grid grid={solvedDfsGrid} />
                 <div>Solve Time: {dfsTime}ms</div>
             </div>
             <div>
                 <h3>Dijkstra</h3>
-                <div>Nodes Visited: {dijkstraNodes}</div>
-                <p>Steps:</p>
+                <div style={{marginBottom: '20px'}}>Nodes Visited: {dijkstraNodes}</div>
+                <p style={{marginBottom: '20px'}}>Steps:</p>
                 <Grid grid={dijkstraGridStep} />
-                <p>Solved Grid:</p>
+                <p style={{marginBottom: '20px'}}>Solved Grid:</p>
                 <Grid grid={solvedDijkstraGrid} />
                 <div>Solve Time: {dijkstraTime}ms</div>
             </div>
             <div>
                 <h3>A*</h3>
-                <div>Nodes Visited: {astarNodes}</div>
-                <p>Steps:</p>
+                <div style={{marginBottom: '20px'}}>Nodes Visited: {astarNodes}</div>
+                <p style={{marginBottom: '20px'}}>Steps:</p>
                 <Grid grid={astarGridStep} />
-                <p>Solved Grid:</p>
+                <p style={{marginBottom: '20px'}}>Solved Grid:</p>
                 <Grid grid={solvedAstarGrid} />
                 <div>Solve Time: {astarTime}ms</div>
             </div>
         </div>
-        <p></p>
-        <div>Best Algorithm: {winner}</div>
+        <div style={{fontWeight: 'bold', fontSize: '24px', marginTop: '20px'}}>Best Algorithm: {winner}</div>
       </>
     )
 }

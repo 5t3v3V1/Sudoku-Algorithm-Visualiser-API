@@ -38,10 +38,11 @@ function App() {
     const [astarGridStep, setAstarGridStep] = useState([]);
     const [winner, setWinner] = useState("")
 
+    const API_URL = "https://algorithm-visualiser-api.onrender.com";
   
     async function generate_solved_board() {
       try {
-        const response = await fetch("http://127.0.0.1:8000/generate_solve_board");
+        const response = await fetch(`${API_URL}/generate_solve_board`);
         if (!response.ok) throw new Error("Failed to generate board");
         const data = await response.json();
 
@@ -57,7 +58,7 @@ function App() {
 
     async function generate_solved_grid() {
       try {
-        const response = await fetch("http://127.0.0.1:8000/generate_solve_grid");
+        const response = await fetch(`${API_URL}/generate_solve_grid`);
         if (!response.ok) throw new Error("Failed to generate grid")
         const data = await response.json();
 

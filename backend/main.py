@@ -1,14 +1,16 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
-from solver import solver
+from backend.solver import solver
 import random
 import copy
 import time
-from validator import is_valid
-from classes import Board, SudokuRequest, Grid, Grid_Node, GridRequest
-from generator import board_generator, grid_generator
-from pathfinding_algorithm import bfs, dfs, dijkstra, astar
+from backend.validator import is_valid
+from backend.classes import Board, SudokuRequest, Grid, Grid_Node, GridRequest
+from backend.generator import board_generator, grid_generator
+from backend.pathfinding_algorithm import bfs, dfs, dijkstra, astar
 from fastapi.middleware.cors import CORSMiddleware
+from models import Results, BoardResults
+from database import SessionLocal
 valid_numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
 
@@ -67,6 +69,7 @@ def generate_board():
 
 @app.get("/generate_solve_board")
 def generate_solve_board():
+    db = SessionLocal()
     board = [[], [], [], [], [], [], [], [], []]
     for y in range(9):
         for x in range(9):
@@ -88,14 +91,25 @@ def generate_solve_board():
 
     start = time.perf_counter()
     
-    solved, board_steps = solver(board)
+    solved, board_steps, board_moves = solver(board)
 
     end = time.perf_counter()
+
+    board_result = BoardResults(
+        moves = board_moves,
+        solve_time = (end - start) * 1000
+    )
+
+    db.add(board_result)
+    db.close()
+    db.commit()
 
     if not solved:
         return {
             "solved": solved,
-            "board": board.to_list(),
+            "generated_board": generated_board.to_list(),
+            "board_steps": board_steps,
+            "unsolved_board": board.to_list(),
             "error": "Board is unsolvable"
         }
 
@@ -104,11 +118,13 @@ def generate_solve_board():
         "generated_board": generated_board.to_list(),
         "board_steps": board_steps,
         "solved_board": board.to_list(),
+        "moves": board_moves,
         "time_ms": (end - start) * 1000
     }
 
 @app.get("/generate_solve_grid")
 def generate_solve_grid():
+    db = SessionLocal()
     grid = grid_generator()
     generated_grid = grid.copy()
     generated_grid = Grid(generated_grid)
@@ -123,17 +139,52 @@ def generate_solve_grid():
     bfs_nodes, solved_bfs_grid, bfs_steps = bfs(bfs_grid)
     bfs_end = time.perf_counter()
 
+    bfs_result = Results(
+        algorithm = "BFS",
+        nodes_visited = bfs_nodes,
+        solve_time = (bfs_end - bfs_start) * 1000
+    )
+
+    db.add(bfs_result)
+
     dfs_start = time.perf_counter()
     dfs_nodes, solved_dfs_grid, dfs_steps = dfs(dfs_grid)
     dfs_end = time.perf_counter()
+
+    dfs_result = Results(
+        algorithm = "DFS",
+        nodes_visited = dfs_nodes,
+        solve_time = (dfs_end - dfs_start) * 1000
+    )
+
+    db.add(dfs_result)
 
     dijkstra_start = time.perf_counter()
     dijkstra_nodes, solved_dijkstra_grid, dijkstra_steps = dijkstra(dijkstra_grid)
     dijkstra_end = time.perf_counter()
 
+    dijkstra_result = Results(
+        algorithm = "Dijkstra",
+        nodes_visited = dijkstra_nodes,
+        solve_time = (dijkstra_end - dijkstra_start) * 1000
+    )
+
+    db.add(dijkstra_result)
+
     astar_start = time.perf_counter()
     astar_nodes, solved_astar_grid, astar_steps = astar(astar_grid)
     astar_end = time.perf_counter()
+
+    astar_result = Results(
+        algorithm = "A*",
+        nodes_visited = astar_nodes,
+        solve_time = (astar_end - astar_start) * 1000
+    )
+
+    db.add(astar_result)
+
+    db.close()
+    db.commit()
 
     return {
         "generated_grid": generated_grid.to_list(),
@@ -145,42 +196,112 @@ def generate_solve_grid():
 
 @app.post("/solve_grid")
 def solve_grid(request: GridRequest):
+    db = SessionLocal()
+    input_grid = request.grid.copy()
+    input_grid = Grid(input_grid)
+    input_grid.append_nodes()
     bfs_grid = Grid(request.grid)
     dfs_grid = Grid(request.grid)
     dijkstra_grid = Grid(request.grid)
     astar_grid = Grid(request.grid)
     
 
+    bfs_start = time.perf_counter()
     bfs_nodes, solved_bfs_grid, bfs_steps = bfs(bfs_grid)
+    bfs_end = time.perf_counter()
+
+    bfs_result = Results(
+        algorithm = "BFS",
+        nodes_visited = bfs_nodes,
+        solve_time = (bfs_end - bfs_start) * 1000
+    )
+
+    db.add(bfs_result)
+
+    dfs_start = time.perf_counter()
     dfs_nodes, solved_dfs_grid, dfs_steps = dfs(dfs_grid)
+    dfs_end = time.perf_counter()
+
+    dfs_result = Results(
+        algorithm = "DFS",
+        nodes_visited = dfs_nodes,
+        solve_time = (dfs_end - dfs_start) * 1000
+    )
+
+    db.add(dfs_result)
+
+    dijkstra_start = time.perf_counter()
     dijkstra_nodes, solved_dijkstra_grid, dijkstra_steps = dijkstra(dijkstra_grid)
+    dijkstra_end = time.perf_counter()
+
+    dijkstra_result = Results(
+        algorithm = "Dijkstra",
+        nodes_visited = dijkstra_nodes,
+        solve_time = (dijkstra_end - dijkstra_start) * 1000
+    )
+
+    db.add(dijkstra_result)
+
+    astar_start = time.perf_counter()
     astar_nodes, solved_astar_grid, astar_steps = astar(astar_grid)
+    astar_end = time.perf_counter()
+
+    astar_result = Results(
+        algorithm = "A*",
+        nodes_visited = astar_nodes,
+        solve_time = (astar_end - astar_start) * 1000
+    )
+
+    db.add(astar_result)
+
+    db.close()
+    db.commit()
 
     return {
-        "bfs": {"bfs_nodes": bfs_nodes, "solved_bfs_grid": solved_bfs_grid.to_list(), "bfs_steps": bfs_steps},
-        "dfs": {"dfs_nodes": dfs_nodes, "solved_dfs_grid": solved_dfs_grid.to_list(), "dfs_steps": dfs_steps},
-        "dijkstra": {"dijkstra_nodes": dijkstra_nodes, "solved_dijkstra_grid": solved_dijkstra_grid.to_list(), "dijkstra_steps": dijkstra_steps},
-        "astar": {"astar_nodes": astar_nodes, "solved_astar_grid": solved_astar_grid.to_list(), "astar_steps": astar_steps},
+        "input_grid": input_grid.to_list(),
+        "bfs": {"bfs_nodes": bfs_nodes, "solved_bfs_grid": solved_bfs_grid.to_list(), "bfs_steps": bfs_steps, "time_ms": (bfs_end - bfs_start) * 1000},
+        "dfs": {"dfs_nodes": dfs_nodes, "solved_dfs_grid": solved_dfs_grid.to_list(), "dfs_steps": dfs_steps, "time_ms": (dfs_end - dfs_start) * 1000},
+        "dijkstra": {"dijkstra_nodes": dijkstra_nodes, "solved_dijkstra_grid": solved_dijkstra_grid.to_list(), "dijkstra_steps": dijkstra_steps, "time_ms": (dijkstra_end - dijkstra_start) * 1000},
+        "astar": {"astar_nodes": astar_nodes, "solved_astar_grid": solved_astar_grid.to_list(), "astar_steps": astar_steps, "time_ms": (astar_end - astar_start) * 1000},
     }
 
 @app.post("/solve_board")
 def solve_board(request: SudokuRequest):
-
+    db = SessionLocal()
     board = Board(request.board)
     board.append_positions()
     
-    solved, steps = solver(board)
+    input_board = copy.deepcopy(board)
+
+    start = time.perf_counter()
+    
+    solved, board_steps, board_moves = solver(board)
+
+    end = time.perf_counter()
+
+    board_result = BoardResults(
+        moves = board_moves,
+        solve_time = (end - start) * 1000
+    )
+
+    db.add(board_result)
+    db.close()
+    db.commit()
 
     if not solved:
         return {
             "solved": solved,
-            "board_steps": steps,
-            "board": board.to_list(),
+            "generated_board": input_board.to_list(),
+            "board_steps": board_steps,
+            "unsolved_board": board.to_list(),
             "error": "Board is unsolvable"
         }
 
     return {
         "solved": solved,
-        "board_steps": steps,
-        "board": board.to_list()
+        "generated_board": input_board.to_list(),
+        "board_steps": board_steps,
+        "solved_board": board.to_list(),
+        "moves": board_moves,
+        "time_ms": (end - start) * 1000
     }

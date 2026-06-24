@@ -18,6 +18,7 @@ function App() {
     const [generatedBoard, setGeneratedBoard] = useState([]);
     const [boardStep, setBoardStep] = useState([])
     const [solvedBoard, setSolvedBoard] = useState([]);
+    const [boardMove, setBoardMove] = useState(0);
     const [boardTime, setBoardTime] = useState(0);
     const [generatedGrid, setGeneratedGrid] = useState([]);
     const [solvedBfsGrid, setSolvedBfsGrid] = useState([]);
@@ -50,6 +51,7 @@ function App() {
         setGeneratedBoard(data.generated_board);
         animate_steps(data.board_steps, setBoardStep)
         setSolvedBoard(data.solved_board);
+        setBoardMove(data.moves);
         setBoardTime(data.time_ms.toFixed(2));
       } catch(err) {
         console.log(err);
@@ -118,7 +120,10 @@ function App() {
             <Board board={solvedBoard} />
           </div>
         </div>
-        <div>Board Time: {boardTime}ms</div>
+        <div>
+          <div>Board Time: {boardTime}ms</div>
+          <div>Moves Made: {boardMove}</div>
+        </div>
         <button onClick={generate_solved_grid}>Generate & Solve Grid</button>
         <div className='generated'>
           <div>

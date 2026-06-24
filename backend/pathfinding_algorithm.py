@@ -1,4 +1,4 @@
-from backend.identifier import identify_node
+from identifier import identify_node
 from collections import deque
 import heapq
 

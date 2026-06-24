@@ -1,5 +1,4 @@
-from backend.validator import is_valid
-import time
+from validator import is_valid
 valid_numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
 def solver(grid, steps = None, moves = None):

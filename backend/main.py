@@ -9,8 +9,9 @@ from classes import Board, SudokuRequest, Grid, Grid_Node, GridRequest
 from generator import board_generator, grid_generator
 from pathfinding_algorithm import bfs, dfs, dijkstra, astar
 from fastapi.middleware.cors import CORSMiddleware
-from models import Results, BoardResults
+from models import Results, BoardResults, ResultAlgorithms
 from database import SessionLocal
+import heapq
 valid_numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
 
@@ -138,47 +139,71 @@ def generate_solve_grid():
     bfs_start = time.perf_counter()
     bfs_nodes, solved_bfs_grid, bfs_steps = bfs(bfs_grid)
     bfs_end = time.perf_counter()
-
-    bfs_result = Results(
-        algorithm = "BFS",
-        nodes_visited = bfs_nodes,
-        solve_time = (bfs_end - bfs_start) * 1000
-    )
-
-    db.add(bfs_result)
+    bfs_solve_time = (bfs_end - bfs_start) * 1000
 
     dfs_start = time.perf_counter()
     dfs_nodes, solved_dfs_grid, dfs_steps = dfs(dfs_grid)
     dfs_end = time.perf_counter()
-
-    dfs_result = Results(
-        algorithm = "DFS",
-        nodes_visited = dfs_nodes,
-        solve_time = (dfs_end - dfs_start) * 1000
-    )
-
-    db.add(dfs_result)
+    dfs_solve_time = (dfs_end - dfs_start) * 1000
 
     dijkstra_start = time.perf_counter()
     dijkstra_nodes, solved_dijkstra_grid, dijkstra_steps = dijkstra(dijkstra_grid)
     dijkstra_end = time.perf_counter()
-
-    dijkstra_result = Results(
-        algorithm = "Dijkstra",
-        nodes_visited = dijkstra_nodes,
-        solve_time = (dijkstra_end - dijkstra_start) * 1000
-    )
-
-    db.add(dijkstra_result)
+    dijkstra_solve_time = (dijkstra_end - dijkstra_start) * 1000
 
     astar_start = time.perf_counter()
     astar_nodes, solved_astar_grid, astar_steps = astar(astar_grid)
     astar_end = time.perf_counter()
+    astar_solve_time = (astar_end - astar_start) * 1000
 
-    astar_result = Results(
+    results = {
+        "BFS": bfs_solve_time,
+        "DFS": dfs_solve_time,
+        "Dijkstra": dijkstra_solve_time,
+        "A*": astar_solve_time
+    }
+
+    best_time = min(results, key=results.get)
+
+    group_result = Results(
+        best_algorithm = best_time
+    )
+
+    db.add(group_result)
+    db.flush()
+
+    bfs_result = ResultAlgorithms(
+        result_id = group_result.id,
+        algorithm = "BFS",
+        nodes_visited = bfs_nodes,
+        solve_time = bfs_solve_time
+    )
+
+    db.add(bfs_result)
+
+    dfs_result = ResultAlgorithms(
+        result_id = group_result.id,
+        algorithm = "DFS",
+        nodes_visited = dfs_nodes,
+        solve_time = dfs_solve_time
+    )
+
+    db.add(dfs_result)
+
+    dijkstra_result = ResultAlgorithms(
+        result_id = group_result.id,
+        algorithm = "Dijkstra",
+        nodes_visited = dijkstra_nodes,
+        solve_time = dijkstra_solve_time
+    )
+
+    db.add(dijkstra_result)
+
+    astar_result = ResultAlgorithms(
+        result_id = group_result.id,
         algorithm = "A*",
         nodes_visited = astar_nodes,
-        solve_time = (astar_end - astar_start) * 1000
+        solve_time = astar
     )
 
     db.add(astar_result)
@@ -204,58 +229,82 @@ def solve_grid(request: GridRequest):
     dfs_grid = Grid(request.grid)
     dijkstra_grid = Grid(request.grid)
     astar_grid = Grid(request.grid)
-    
 
     bfs_start = time.perf_counter()
     bfs_nodes, solved_bfs_grid, bfs_steps = bfs(bfs_grid)
     bfs_end = time.perf_counter()
-
-    bfs_result = Results(
-        algorithm = "BFS",
-        nodes_visited = bfs_nodes,
-        solve_time = (bfs_end - bfs_start) * 1000
-    )
-
-    db.add(bfs_result)
+    bfs_solve_time = (bfs_end - bfs_start) * 1000
 
     dfs_start = time.perf_counter()
     dfs_nodes, solved_dfs_grid, dfs_steps = dfs(dfs_grid)
     dfs_end = time.perf_counter()
-
-    dfs_result = Results(
-        algorithm = "DFS",
-        nodes_visited = dfs_nodes,
-        solve_time = (dfs_end - dfs_start) * 1000
-    )
-
-    db.add(dfs_result)
+    dfs_solve_time = (dfs_end - dfs_start) * 1000
 
     dijkstra_start = time.perf_counter()
     dijkstra_nodes, solved_dijkstra_grid, dijkstra_steps = dijkstra(dijkstra_grid)
     dijkstra_end = time.perf_counter()
-
-    dijkstra_result = Results(
-        algorithm = "Dijkstra",
-        nodes_visited = dijkstra_nodes,
-        solve_time = (dijkstra_end - dijkstra_start) * 1000
-    )
-
-    db.add(dijkstra_result)
+    dijkstra_solve_time = (dijkstra_end - dijkstra_start) * 1000
 
     astar_start = time.perf_counter()
     astar_nodes, solved_astar_grid, astar_steps = astar(astar_grid)
     astar_end = time.perf_counter()
+    astar_solve_time = (astar_end - astar_start) * 1000
 
-    astar_result = Results(
+    results = {
+        "BFS": bfs_solve_time,
+        "DFS": dfs_solve_time,
+        "Dijkstra": dijkstra_solve_time,
+        "A*": astar_solve_time
+    }
+
+    best_time = min(results, key=results.get)
+
+    group_result = ResultAlgorithms(
+        best_algorithm = best_time
+    )
+
+    db.add(group_result)
+    db.flush()
+
+    bfs_result = ResultAlgorithms(
+        result_id = group_result.id,
+        algorithm = "BFS",
+        nodes_visited = bfs_nodes,
+        solve_time = bfs_solve_time
+    )
+
+    db.add(bfs_result)
+
+    dfs_result = ResultAlgorithms(
+        result_id = group_result.id,
+        algorithm = "DFS",
+        nodes_visited = dfs_nodes,
+        solve_time = dfs_solve_time
+    )
+
+    db.add(dfs_result)
+
+    dijkstra_result = ResultAlgorithms(
+        result_id = group_result.id,
+        algorithm = "Dijkstra",
+        nodes_visited = dijkstra_nodes,
+        solve_time = dijkstra_solve_time
+    )
+
+    db.add(dijkstra_result)
+
+    astar_result = ResultAlgorithms(
+        result_id = group_result.id,
         algorithm = "A*",
         nodes_visited = astar_nodes,
-        solve_time = (astar_end - astar_start) * 1000
+        solve_time = astar_solve_time
     )
 
     db.add(astar_result)
 
     db.commit()
     db.close()
+
 
     return {
         "input_grid": input_grid.to_list(),

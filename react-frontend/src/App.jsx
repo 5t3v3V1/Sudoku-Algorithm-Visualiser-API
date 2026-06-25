@@ -228,7 +228,11 @@ function App() {
         <p>This is algorithm visualiser which is able to solve and generate sudoku boards and 5x5 grids using BFS, DFS, Dijkstra and A* algorithms.</p>
         <p>Creator: 5t3v3V1</p>
         <h3>Options</h3>
-        <button onClick={generate_solved_board}>Generate & Solve Board</button>
+        <div className='diff'>
+          <button onClick={() => generate_solved_board(20)}>Generate & Solve Board (Hard)</button>
+          <button onClick={() => generate_solved_board(30)}>Generate & Solve Board (Medium)</button>
+          <button onClick={() => generate_solved_board(40)}>Generate & Solve Board (Easy)</button>
+        </div>
         <div className='boards'>
           <div>
             <h4>Generated Board:</h4>
@@ -247,11 +251,8 @@ function App() {
           <div>Board Time: {boardTime}ms</div>
           <div>Moves Made: {boardMove}</div>
         </div>
-        <div className='diff'>
-          <button onClick={() => generate_solved_grid(20)}>Generate & Solve Grid (Hard)</button>
-          <button onClick={() => generate_solved_grid(30)}>Generate & Solve Grid (Medium)</button>
-          <button onClick={() => generate_solved_grid(40)}>Generate & Solve Grid (Easy)</button>
-        </div>
+        
+        <button onClick={generate_solved_grid}>Generate & Solve Grid</button>
         <div className='generated'>
           <div>
             <h3>Generated Grid:</h3>

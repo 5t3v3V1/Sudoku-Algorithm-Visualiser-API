@@ -158,13 +158,13 @@ function App() {
 
     async function generate_solved_board_prews(difficulty) {
       try {
-        const data = { difficulty }
+        const diff = { difficulty }
         const response = await fetch(`${API_URL}/generate_solve_board_prews`, {
           method: 'POST',
           headers: {
             "Content-Type": "application/json"
           },
-          body: JSON.stringify(data)
+          body: JSON.stringify(diff)
         });
         if (!response.ok) throw new Error("Failed");
         const data = await response.json();

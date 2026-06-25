@@ -160,11 +160,11 @@ function App() {
       try {
         const data = { difficulty }
         const response = await fetch(`${API_URL}/generate_solve_board_prews`, {
-          method = 'POST',
+          method: 'POST',
           headers: {
             "Content-Type": "application/json"
           },
-          body = JSON.stringify(data)
+          body: JSON.stringify(data)
         });
         if (!response.ok) throw new Error("Failed");
         const data = await response.json();

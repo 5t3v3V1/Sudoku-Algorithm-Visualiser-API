@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, WebSocket
 from pydantic import BaseModel
 from solver import solver
 import random
@@ -11,7 +11,7 @@ from pathfinding_algorithm import bfs, dfs, dijkstra, astar
 from fastapi.middleware.cors import CORSMiddleware
 from models import Results, BoardResults, ResultAlgorithms
 from database import SessionLocal
-import heapq
+from concurrent.futures import ThreadPoolExecutor
 valid_numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
 
@@ -30,6 +30,17 @@ def message():
     return {
         "message": "Algorithm Visualiser API"
     }
+
+@app.websocket("/counter")
+async def counter(websocket: WebSocket):
+    await websocket.accept()
+
+    while True:
+
+        for number in range(10):
+            await websocket.send_json(number)
+            
+        break
 
 @app.get("/health")
 def health():
@@ -136,25 +147,16 @@ def generate_solve_grid():
     dijkstra_grid = Grid(grid)
     astar_grid = Grid(grid)
     
-    bfs_start = time.perf_counter()
-    bfs_nodes, solved_bfs_grid, bfs_steps = bfs(bfs_grid)
-    bfs_end = time.perf_counter()
-    bfs_solve_time = (bfs_end - bfs_start) * 1000
+    with ThreadPoolExecutor as executor:
+        bfs_future = executor.submit(bfs, bfs_grid)
+        dfs_future = executor.submit(dfs, dfs_grid)
+        dijkstra_future = executor.submit(dijkstra, dijkstra_grid)
+        astar_future = executor.submit(astar, astar_grid)
 
-    dfs_start = time.perf_counter()
-    dfs_nodes, solved_dfs_grid, dfs_steps = dfs(dfs_grid)
-    dfs_end = time.perf_counter()
-    dfs_solve_time = (dfs_end - dfs_start) * 1000
-
-    dijkstra_start = time.perf_counter()
-    dijkstra_nodes, solved_dijkstra_grid, dijkstra_steps = dijkstra(dijkstra_grid)
-    dijkstra_end = time.perf_counter()
-    dijkstra_solve_time = (dijkstra_end - dijkstra_start) * 1000
-
-    astar_start = time.perf_counter()
-    astar_nodes, solved_astar_grid, astar_steps = astar(astar_grid)
-    astar_end = time.perf_counter()
-    astar_solve_time = (astar_end - astar_start) * 1000
+        bfs_nodes, solved_bfs_grid, bfs_steps, bfs_solve_time = bfs_future.result()
+        dfs_nodes, solved_dfs_grid, dfs_steps, dfs_solve_time = dfs_future.result()
+        dijkstra_nodes, solved_dijkstra_grid, dijkstra_steps, dijkstra_solve_time = dijkstra_future.result()
+        astar_nodes, solved_astar_grid, astar_steps, astar_solve_time = astar_future.result()
 
     results = {
         "BFS": bfs_solve_time,

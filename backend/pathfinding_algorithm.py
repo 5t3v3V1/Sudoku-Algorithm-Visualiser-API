@@ -1,8 +1,10 @@
 from identifier import identify_node
 from collections import deque
 import heapq
+import time
 
 def bfs(grid):
+    start_time = time.perf_counter()
     start_position, end_position = (0, 0), (4, 4)
     grid.append_nodes()
     queue = deque([start_position])
@@ -34,9 +36,11 @@ def bfs(grid):
                 identified_node.pathed()
                 steps.append(grid.to_list())
 
-            bfs_grid = grid  
+            bfs_grid = grid 
+            end_time = time.perf_counter()
+            bfs_time = (end_time - start_time) * 1000 
 
-            return nodes_visited, bfs_grid, steps
+            return nodes_visited, bfs_grid, steps, bfs_time
 
         elif current != end_position:
             for neighbour in current_node.get_neighbours():
@@ -53,10 +57,13 @@ def bfs(grid):
                         queue.append(neighbour.position)
 
     print("Unable to reach desired node")
-    return nodes_visited, bfs_grid, steps
+    end_time = time.perf_counter()
+    bfs_time = (end_time - start_time) * 1000 
+    return nodes_visited, bfs_grid, steps, bfs_time
 
 
 def dfs(grid):
+    start_time = time.perf_counter()
     start_position, end_position = (0, 0), (4, 4)
     grid.append_nodes()
     stack = deque([start_position])
@@ -90,8 +97,10 @@ def dfs(grid):
                 steps.append(grid.to_list())
 
             dfs_grid = grid 
+            end_time = time.perf_counter()
+            dfs_time = (end_time - start_time) * 1000 
 
-            return nodes_visited, dfs_grid, steps
+            return nodes_visited, dfs_grid, steps, dfs_time
 
         elif current != end_position:
             for neighbour in current_node.get_neighbours():
@@ -108,9 +117,12 @@ def dfs(grid):
                         stack.append(neighbour.position)
 
     print("Unable to reach desired node")
-    return nodes_visited, dfs_grid, steps
+    end_time = time.perf_counter()
+    dfs_time = (end_time - start_time) * 1000 
+    return nodes_visited, dfs_grid, steps, dfs_time
 
 def dijkstra(grid):
+    start_time = time.perf_counter()
     start_position, end_position = (0, 0), (4, 4)
     grid.append_nodes()
     unvisited = set()
@@ -167,8 +179,10 @@ def dijkstra(grid):
                 steps.append(grid.to_list())
 
             dijkstra_grid = grid
+            end_time = time.perf_counter()
+            dijkstra_time = (end_time - start_time) * 1000 
                  
-            return nodes_visited, dijkstra_grid, steps
+            return nodes_visited, dijkstra_grid, steps, dijkstra_time
         
         elif current != end_position:
             for neighbour in current_node.get_neighbours():
@@ -190,9 +204,12 @@ def dijkstra(grid):
             visited.add(current)
 
     print("Unable to reach desired node")
-    return nodes_visited, dijkstra_grid, steps
+    end_time = time.perf_counter()
+    dijkstra_time = (end_time - start_time) * 1000 
+    return nodes_visited, dijkstra_grid, steps, dijkstra_time
 
 def astar(grid):
+    start_time = time.perf_counter()
     start_position, end_position = (0, 0), (4, 4)
     grid.append_nodes()
     unvisited = set()
@@ -250,8 +267,10 @@ def astar(grid):
                 steps.append(grid.to_list())
 
             astar_grid = grid 
+            end_time = time.perf_counter()
+            astar_time = (end_time - start_time) * 1000 
                 
-            return nodes_visited, astar_grid, steps
+            return nodes_visited, astar_grid, steps, astar_time
         
         elif current != end_position:
             for neighbour in current_node.get_neighbours():
@@ -274,4 +293,6 @@ def astar(grid):
             visited.add(current)
 
     print("Unable to reach desired node")
-    return nodes_visited, astar_grid, steps
+    end_time = time.perf_counter()
+    astar_time = (end_time - start_time) * 1000 
+    return nodes_visited, astar_grid, steps, astar_time

@@ -12,6 +12,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from models import Results, BoardResults, ResultAlgorithms
 from database import SessionLocal
 from concurrent.futures import ThreadPoolExecutor
+import asyncio
 valid_numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
 
@@ -39,7 +40,8 @@ async def counter(websocket: WebSocket):
 
         for number in range(10):
             await websocket.send_json(number)
-            
+            await asyncio.sleep(1)
+
         break
 
 @app.get("/health")

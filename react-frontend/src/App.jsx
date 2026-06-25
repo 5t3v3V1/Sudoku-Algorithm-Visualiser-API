@@ -15,6 +15,7 @@ function animate_steps(steps, setType, delay = 150) {
 };
 
 function App() {
+    const [count, setCount] = useState[0]
     const [generatedBoard, setGeneratedBoard] = useState([]);
     const [boardStep, setBoardStep] = useState([])
     const [solvedBoard, setSolvedBoard] = useState([]);
@@ -43,12 +44,12 @@ function App() {
     
     async function counter() {
       try {
-        const socket = await WebSocket(`${API_URL}/generate_solve_board`);
+        const socket = new WebSocket(`${API_URL}/counter`);
         socket.onopen = () => {
           console.log("Connected");
         }
         socket.onmessage = (event) => {
-          console.log(event);
+          setCount(event.data);
         }
       } catch(err) {
       console.log(err);
@@ -115,8 +116,9 @@ function App() {
     return (
       <>
         <h1>Algorithm Visualiser</h1>
+        <p>{count}</p>
         <h2 style={{textAlign: 'center'}}>Description</h2>
-        <p>Hi, this is algorithm visualiser which is able to solve and generate sudoku boards and 5x5 grids using BFS, DFS, Dijkstra and A* algorithms.</p>
+        <p>This is algorithm visualiser which is able to solve and generate sudoku boards and 5x5 grids using BFS, DFS, Dijkstra and A* algorithms.</p>
         <p>Creator: 5t3v3V1</p>
         <h3>Options</h3>
         <button onClick={generate_solved_board}>Generate & Solve Board</button>

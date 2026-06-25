@@ -44,6 +44,8 @@ function App() {
     
     useEffect(() => {
       counter();
+      generate_solved_board();
+      generate_solved_grid;
     }, []);
 
     async function counter() {
@@ -59,11 +61,11 @@ function App() {
       console.log(err);
       }
     };
-  
+
     async function generate_solved_board() {
       try {
-        const response = await fetch(`${API_URL}/generate_solve_board`);
-        if (!response.ok) throw new Error("Failed to generate board");
+        const socket = new WebSocket(`wss://algorithm-visualiser-api.onrender.com/generate_solve_board`);
+        if (!socket.ok) throw new Error("Failed");
         const data = await response.json();
 
         console.log(data);
@@ -76,11 +78,31 @@ function App() {
         console.log(err);
       }
     };
+  
+    /*async function generate_solved_board() {
+      try {
+        const response = await fetch(`${API_URL}/generate_solve_board`);
+        if (!response.ok) throw new Error("Failed");
+        const data = await response.json();
 
-    async function generate_solved_grid() {
+        console.log(data);
+        setGeneratedBoard(data.generated_board);
+        animate_steps(data.board_steps, setBoardStep)
+        setSolvedBoard(data.solved_board);
+        setBoardMove(data.moves);
+        setBoardTime(data.time_ms.toFixed(2));
+      } catch(err) {
+        console.log(err);
+      }
+    };*/
+
+
+
+
+    /*async function generate_solved_grid() {
       try {
         const response = await fetch(`${API_URL}/generate_solve_grid`);
-        if (!response.ok) throw new Error("Failed to generate grid")
+        if (!response.ok) throw new Error("Failed")
         const data = await response.json();
 
         console.log(data);
@@ -115,7 +137,7 @@ function App() {
       } catch(err) {
         console.log(err);
       };
-    };
+    };*/
 
     return (
       <>

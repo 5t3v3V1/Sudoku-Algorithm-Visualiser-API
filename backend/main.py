@@ -101,7 +101,7 @@ async def generate_solve_board(websocket: WebSocket):
     await websocket.accept()
     db = SessionLocal()
     data = await websocket.receive_json()
-    difficulty = data["body"]
+    difficulty = data["difficulty"]
     board = [[], [], [], [], [], [], [], [], []]
     for y in range(9):
         for x in range(9):
@@ -206,6 +206,7 @@ async def generate_solve_grid(websocket: WebSocket):
 @app.post("/generate_solve_board_prews")
 def generate_solve_board_prews(difficulty: DifficultyRequest):
     db = SessionLocal()
+
     board = [[], [], [], [], [], [], [], [], []]
     for y in range(9):
         for x in range(9):

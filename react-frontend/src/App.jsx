@@ -15,7 +15,7 @@ function animate_steps(steps, setType, delay = 150, ref) {
 };
 
 function App() {
-    const [count, setCount] = useState(0);
+    const [Live, setLive] = useState(true);
     const [generatedBoard, setGeneratedBoard] = useState([]);
     const [boardStep, setBoardStep] = useState([])
     const [solvedBoard, setSolvedBoard] = useState([]);
@@ -43,26 +43,27 @@ function App() {
     const API_URL = "https://algorithm-visualiser-api.onrender.com";
     
     useEffect(() => {
-      counter();
       generate_solved_board();
       generate_solved_grid();
     }, []);
 
-    async function counter() {
-      try {
-        const socket = new WebSocket(`wss://algorithm-visualiser-api.onrender.com/counter`);
-        socket.onopen = () => {
-          console.log("Connected");
-        }
-        socket.onmessage = (event) => {
-          setCount(event.data);
-        }
-      } catch(err) {
-      console.log(err);
+    const socketRef1 = useRef(null);
+
+    async function board_button(difficulty) {
+      if (Live) {
+        generate_solved_board(difficulty)
+      } else {
+        generate_solved_board_prews(difficulty)
       }
     };
 
-    const socketRef1 = useRef(null);
+    async function grid_button() {
+      if(Live) {
+        generate_solved_grid()
+      } else {
+        generate_solved_grid_prews()
+      }
+    };
 
     async function generate_solved_board(difficulty) {
       try {
@@ -223,15 +224,17 @@ function App() {
     return (
       <>
         <h1>Algorithm Visualiser</h1>
-        <div>{count}</div>
         <h2 style={{textAlign: 'center'}}>Description</h2>
         <p>This is algorithm visualiser which is able to solve and generate sudoku boards and 5x5 grids using BFS, DFS, Dijkstra and A* algorithms.</p>
         <p>Creator: 5t3v3V1</p>
+        <p>You are able to switch between live and instant rendering</p>
+        <h3>Mode:</h3>
+        <button onClick={() => setLive(!Live)}>Mode: {Live ? "Live" : "Instant"}</button>
         <h3>Options</h3>
         <div className='diff'>
-          <button onClick={() => generate_solved_board(20)}>Generate & Solve Board (Hard)</button>
-          <button onClick={() => generate_solved_board(30)}>Generate & Solve Board (Medium)</button>
-          <button onClick={() => generate_solved_board(40)}>Generate & Solve Board (Easy)</button>
+          <button onClick={() => board_button(20)}>Generate & Solve Board (Hard)</button>
+          <button onClick={() => board_button(30)}>Generate & Solve Board (Medium)</button>
+          <button onClick={() => board_button(40)}>Generate & Solve Board (Easy)</button>
         </div>
         <div className='boards'>
           <div>
@@ -252,7 +255,7 @@ function App() {
           <div>Moves Made: {boardMove}</div>
         </div>
         
-        <button onClick={generate_solved_grid}>Generate & Solve Grid</button>
+        <button onClick={grid_button}>Generate & Solve Grid</button>
         <div className='generated'>
           <div>
             <h3>Generated Grid:</h3>

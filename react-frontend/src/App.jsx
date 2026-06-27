@@ -54,7 +54,7 @@ function App() {
     
     useEffect(() => {
       stats();
-      generate_solved_board();
+      generate_solved_board(30);
       generate_solved_grid();
     }, []);
 
@@ -66,7 +66,7 @@ function App() {
 
         console.log(data);
         
-        setBoardCount(data.board_solved);
+        setBoardCount(data.boards_solved);
         setGridCount(data.grids_solved);
         setBfsBest(data.bfs.best);
         setBfsAvg(data.bfs.avg.toFixed(2));
@@ -93,7 +93,7 @@ function App() {
     };
 
     async function grid_button() {
-      if(Live) {
+      if(live) {
         generate_solved_grid()
       } else {
         generate_solved_grid_prews()

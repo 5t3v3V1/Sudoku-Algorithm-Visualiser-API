@@ -88,6 +88,17 @@ button {
     margin-bottom: 20px;
 }
 
+.statsalgorithms {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.algorithms {
+    margin-bottom: 20px;
+}
+
+
 #generated_board,
 #solved_board,
 #generated_grid {

@@ -15,7 +15,17 @@ function animate_steps(steps, setType, delay = 150, ref) {
 };
 
 function App() {
-    const [Live, setLive] = useState(true);
+    const [live, setLive] = useState(true);
+    const [boardCount, setBoardCount] = useState(0);
+    const [gridCount, setGridCount] = useState(0);
+    const [bfsBest, setBfsBest] = useState(0);
+    const [bfsAvg, setBfsAvg] = useState(0);
+    const [dfsBest, setDfsBest] = useState(0);
+    const [dfsAvg, setDfsAvg] = useState(0);
+    const [dijkstraBest, setDijkstraBest] = useState(0);
+    const [dijkstraAvg, setDijkstraAvg] = useState(0);
+    const [astarBest, setAstarBest] = useState(0);
+    const [astarAvg, setAstarAvg] = useState(0);
     const [generatedBoard, setGeneratedBoard] = useState([]);
     const [boardStep, setBoardStep] = useState([])
     const [solvedBoard, setSolvedBoard] = useState([]);
@@ -43,14 +53,39 @@ function App() {
     const API_URL = "https://algorithm-visualiser-api.onrender.com";
     
     useEffect(() => {
+      stats();
       generate_solved_board();
       generate_solved_grid();
     }, []);
 
+    async function stats() {
+      try {
+        const response = await fetch(`${API_URL}/stats`);
+        if (!response.ok) throw new Error("Failed");
+        const data = await response.json();
+
+        console.log(data);
+        
+        setBoardCount(data.board_solved);
+        setGridCount(data.grids_solved);
+        setBfsBest(data.bfs.best);
+        setBfsAvg(data.bfs.avg.toFixed(2));
+        setDfsBest(data.dfs.best);
+        setDfsAvg(data.dfs.avg.toFixed(2));
+        setDijkstraBest(data.dijkstra.best);
+        setDijkstraAvg(data.dijkstra.avg.toFixed(2));
+        setAstarBest(data.astar.best);
+        setAstarAvg(data.astar.avg.toFixed(2));
+
+      } catch(err) {
+        console.log(err);
+      };
+    };
+
     const socketRef1 = useRef(null);
 
     async function board_button(difficulty) {
-      if (Live) {
+      if (live) {
         generate_solved_board(difficulty)
       } else {
         generate_solved_board_prews(difficulty)
@@ -227,9 +262,36 @@ function App() {
         <h2 style={{textAlign: 'center'}}>Description</h2>
         <p>This is algorithm visualiser which is able to solve and generate sudoku boards and 5x5 grids using BFS, DFS, Dijkstra and A* algorithms.</p>
         <p>Creator: 5t3v3V1</p>
+        <h3>Statistics</h3>
+        <div className='stats'>
+          <p>Boards Solved: {boardCount}</p>
+          <p>Grids Solved: {gridCount}</p>
+          <div className='statsalgorithms'>
+            <div>
+              <h2>BFS</h2>
+              <p>Wins: {bfsBest}</p>
+              <p>Average Time: {bfsAvg}ms</p>
+            </div>
+            <div>
+              <h2>DFS</h2>
+              <p>Wins: {dfsBest}</p>
+              <p>Average Time: {dfsAvg}ms</p>
+            </div>
+            <div>
+              <h2>Dijkstra</h2>
+              <p>Wins: {dijkstraBest}</p>
+              <p>Average Time: {dijkstraAvg}ms</p>
+            </div>
+            <div>
+              <h2>A*</h2>
+              <p>Wins: {astarBest}</p>
+              <p>Average Time: {astarAvg}ms</p>
+            </div>
+          </div>
+        </div>
         <p>You are able to switch between live and instant rendering</p>
         <h3>Mode:</h3>
-        <button onClick={() => setLive(!Live)}>Mode: {Live ? "Live" : "Instant"}</button>
+        <button onClick={() => setLive(!live)}>Mode: {Live ? "Live" : "Instant"}</button>
         <h3>Options</h3>
         <div className='diff'>
           <button onClick={() => board_button(20)}>Generate & Solve Board (Hard)</button>

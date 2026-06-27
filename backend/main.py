@@ -14,6 +14,7 @@ from models import Results, BoardResults, ResultAlgorithms
 from database import SessionLocal
 from concurrent.futures import ThreadPoolExecutor
 import asyncio
+from sqlalchemy import func
 valid_numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
 
@@ -88,13 +89,25 @@ def generate_board():
         "board": board.to_list()
     }
 
-@app.websocket("/counter")
-async def counter(websocket: WebSocket):
-    await websocket.accept()
+@app.get("/stats")
+def stats():
+    db = SessionLocal()
+    best_counts = db.query(Results.best_algorithm, func.count(Results.best_algorithm)).group_by(Results.best_algorithm).all()
+    avg_time = db.query(ResultAlgorithms.algorithm, func.avg(ResultAlgorithms.solve_time)).group_by(ResultAlgorithms.algorithm).all()
+    boards_solved = db.query(func.count(BoardResults.id)).scalar()
+    grids_solved = db.query(func.count(Results.id)).scalar()
+    db.close()
 
-    for number in range(10):
-        await websocket.send_json(number)
-        await asyncio.sleep(1)
+    best_dict = {row[0]: row[1] for row in best_counts}
+    avg_dict = {row[0]: row[1] for row in avg_time}
+    return {
+        "bfs": {"best": best_dict["BFS"], "avg": avg_dict["BFS"]},
+        "dfs": {"best": best_dict["DFS"], "avg": avg_dict["DFS"]},
+        "dijkstra": {"best": best_dict["Dijkstra"], "avg": avg_dict["Dijkstra"]},
+        "astar": {"best": best_dict["A*"], "avg": avg_dict["A*"]},
+        "boards_solved": boards_solved,
+        "grids_solved": grids_solved
+    }
 
 @app.websocket("/generate_solve_board")
 async def generate_solve_board(websocket: WebSocket):

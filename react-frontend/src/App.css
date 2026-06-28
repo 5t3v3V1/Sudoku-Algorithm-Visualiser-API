@@ -88,6 +88,10 @@ button {
     margin-bottom: 20px;
 }
 
+.stats {
+    margin-bottom: 15px;
+}
+
 .statsalgorithms {
     display: flex;
     flex-direction: row;

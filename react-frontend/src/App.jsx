@@ -289,9 +289,8 @@ function App() {
             </div>
           </div>
         </div>
-        <p>You are able to switch between live and instant rendering</p>
         <h3>Mode:</h3>
-        <button onClick={() => setLive(!live)}>Mode: {live ? "Live" : "Instant"}</button>
+        <button onClick={() => setLive(!live)}>{live ? "Live" : "Instant"}</button>
         <h3>Options</h3>
         <div className='diff'>
           <button onClick={() => board_button(20)}>Generate & Solve Board (Hard)</button>

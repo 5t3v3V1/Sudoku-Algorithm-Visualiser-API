@@ -101,10 +101,10 @@ def stats():
     best_dict = {row[0]: row[1] for row in best_counts}
     avg_dict = {row[0]: row[1] for row in avg_time}
     return {
-        "bfs": {"best": best_dict["BFS"], "avg": avg_dict["BFS"]},
-        "dfs": {"best": best_dict["DFS"], "avg": avg_dict["DFS"]},
-        "dijkstra": {"best": best_dict["Dijkstra"], "avg": avg_dict["Dijkstra"]},
-        "astar": {"best": best_dict["A*"], "avg": avg_dict["A*"]},
+        "bfs": {"best": best_dict.get("BFS", 0), "avg": avg_dict.get("BFS", 0)},
+        "dfs": {"best": best_dict.get("DFS", 0), "avg": avg_dict.get("DFS", 0)},
+        "dijkstra": {"best": best_dict.get("Dijkstra", 0), "avg": avg_dict.get("Dijkstra", 0)},
+        "astar": {"best": best_dict.get("A*", 0), "avg": avg_dict.get("A*", 0)},
         "boards_solved": boards_solved,
         "grids_solved": grids_solved
     }
